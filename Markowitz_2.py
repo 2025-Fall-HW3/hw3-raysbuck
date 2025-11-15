@@ -70,8 +70,33 @@ class MyPortfolio:
         """
         TODO: Complete Task 4 Below
         """
+        # set current zone
+        MOMENTUM_DAYS = 10
+        xlk_index = assets.get_loc('XLK') 
+        xlu_index = assets.get_loc('XLU')
+        xlp_index = assets.get_loc('XLP')
+        n = len(assets)
         
-        
+        for i in range(MOMENTUM_DAYS, len(self.price.index)):
+            # get momentum of each ETF
+            R_n = self.returns.copy()[assets].iloc[i - MOMENTUM_DAYS : i]
+            R_day = (1 + R_n).prod() - 1
+
+            xlk_return = R_day['XLK']
+            min_return = R_day.min()
+            weights = np.zeros(n)
+
+            if xlk_return == min_return:
+                # Only when BigTech is in a rest and waiting for boosting~~~
+                weights[xlu_index] = 0.45
+                weights[xlp_index] = 0.45
+                weights[xlk_index] = 0.10
+            else:
+                # All in BigTech!!!!!!
+                weights[xlk_index] = 1.0
+
+            self.portfolio_weights.loc[self.price.index[i], assets] = weights
+
         """
         TODO: Complete Task 4 Above
         """
